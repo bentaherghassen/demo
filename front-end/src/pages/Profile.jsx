@@ -52,21 +52,24 @@ const Profile = () => {
         );
 
         const userData = response.data;
+        const billing = userData.addresses.find(addr => addr.address_type === 'billing') || {};
+        const shipping = userData.addresses.find(addr => addr.address_type === 'shipping') || {};
+
         setFormData({
           ...userData,
-          billing_address: userData.billing_address || {
-            address_1: '',
-            address_2: '',
-            state: '',
-            zip_code: '',
-            country: '',
+          billing_address: {
+            address_1: billing.address_1 || '',
+            address_2: billing.address_2 || '',
+            state: billing.state || '',
+            zip_code: billing.zip_code || '',
+            country: billing.country || '',
           },
-          shipping_address: userData.shipping_address || {
-            address_1: '',
-            address_2: '',
-            state: '',
-            zip_code: '',
-            country: '',
+          shipping_address: {
+            address_1: shipping.address_1 || '',
+            address_2: shipping.address_2 || '',
+            state: shipping.state || '',
+            zip_code: shipping.zip_code || '',
+            country: shipping.country || '',
           },
         });
       } catch (err) {
@@ -105,8 +108,8 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/user/${user.sub}`,
+      const response = await axios.patch(
+        `${import.meta.env.VITE_API_URL}/api/user/profile/update`,
         formData,
         {
           headers: {

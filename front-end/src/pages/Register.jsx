@@ -10,8 +10,8 @@ const Register = () => {
   const [form, setForm] = useState({
     email: '',
     password: '',
-    first_name: '',
-    last_name: '',
+    fname: '',
+    lname: '',
     username: '',
     gender: '',
     phone_number: '',
@@ -42,8 +42,8 @@ const Register = () => {
       if (res?.error) {
         setError(res.error);
       } else {
-        setSuccess('Registration successful! Redirecting...');
-        setTimeout(() => navigate('/'), 1500);
+        setSuccess('Registration successful! Redirecting to login...');
+        setTimeout(() => navigate('/login'), 1500);
       }
     } catch (err) {
       setError('Failed to register. Please check your inputs.');
@@ -93,21 +93,21 @@ const Register = () => {
             />
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="first_name">
+          <Form.Group className="mb-3" controlId="fname">
             <Form.Label>First Name</Form.Label>
             <Form.Control
-              name="first_name"
-              value={form.first_name}
+              name="fname"
+              value={form.fname}
               onChange={handleChange}
               required
             />
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="last_name">
+          <Form.Group className="mb-3" controlId="lname">
             <Form.Label>Last Name</Form.Label>
             <Form.Control
-              name="last_name"
-              value={form.last_name}
+              name="lname"
+              value={form.lname}
               onChange={handleChange}
               required
             />

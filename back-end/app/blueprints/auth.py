@@ -17,15 +17,15 @@ auth_bp = Blueprint('auth', __name__)
 def register():
     data = request.get_json() or {}
 
-    required = ['email', 'password', 'first_name', 'last_name', 'username', 'gender', 'phone_number']
+    required = ['email', 'password', 'fname', 'lname', 'username', 'gender', 'phone_number']
     validation_error = validate_required_fields(data, required)
     if validation_error:
         return jsonify(validation_error), 400
 
     email = data.get('email')
     password = data.get('password')
-    fname = data.get('first_name')
-    lname = data.get('last_name')
+    fname = data.get('fname')
+    lname = data.get('lname')
     username = data.get('username')
     gender = data.get('gender')
     phone_number = data.get('phone_number')
@@ -126,7 +126,7 @@ def login():
     db.session.commit()
 
     # 8️⃣ Generate JWT token
-    token = create_access_token(identity=user.id)
+    token = create_access_token(identity=str(user.id))
 
     return jsonify({
         'message': 'Login successful',

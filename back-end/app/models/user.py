@@ -120,3 +120,6 @@ class LoginAttempt(db.Model):
         self.count = 0
         self.ban_until = None
         self.last_attempt = datetime.utcnow()
+
+    def is_banned(self):
+        return self.ban_until and datetime.utcnow() < self.ban_until
