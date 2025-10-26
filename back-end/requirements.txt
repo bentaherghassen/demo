@@ -1,8 +1,10 @@
 alembic==1.17.0
+flask-bcrypt==1.0.1
+Flask-JWT-Extended==4.4.4
 blinker==1.9.0
 click==8.3.0
 colorama==0.4.6
-Flask==3.1.2
+Flask<3.0
 flask-cors==6.0.1
 Flask-Login==0.6.3
 Flask-Migrate==4.1.0

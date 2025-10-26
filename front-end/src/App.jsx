@@ -5,6 +5,9 @@ import AppNavbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import ResetPasswordRequest from './pages/ResetPasswordRequest';
+import ResetPasswordConfirm from './pages/ResetPasswordConfirm';
 import { AuthProvider, AuthContext } from './context/AuthContext.jsx';
 
 // 🔒 Protected route component
@@ -41,10 +44,13 @@ function App() {
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/reset-password" element={<ResetPasswordRequest />} />
+            <Route path="/reset-password/:token" element={<ResetPasswordConfirm />} />
 
             {/* Protected route (only visible when user restored or logged in) */}
             <Route path="/" element={<ProtectedRoute element={() => <h2>Home Page</h2>} />} />
             <Route path="/profile" element={<ProtectedRoute element={Profile} />} />
+            <Route path="/settings" element={<ProtectedRoute element={Settings} />} />
           </Routes>
         </div>
       </Router>

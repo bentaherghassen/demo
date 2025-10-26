@@ -37,48 +37,46 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-  if (!user) return;
+    if (!user) return;
 
-  const fetchUserData = async () => {
-    try {
-      const token = localStorage.getItem('token');
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/user/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/user/${user.sub}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const userData = response.data;
+        setFormData({
+          ...userData,
+          billing_address: userData.billing_address || {
+            address_1: '',
+            address_2: '',
+            state: '',
+            zip_code: '',
+            country: '',
           },
-        }
-      );
+          shipping_address: userData.shipping_address || {
+            address_1: '',
+            address_2: '',
+            state: '',
+            zip_code: '',
+            country: '',
+          },
+        });
+      } catch (err) {
+        console.log(err);
+        setError('Failed to fetch user data.');
+      }
+    };
 
-      const userData = response.data;
-      setFormData({
-        ...userData,
-        billing_address: userData.billing_address || {
-          address_1: '',
-          address_2: '',
-          state: '',
-          zip_code: '',
-          country: '',
-        },
-        shipping_address: userData.shipping_address || {
-          address_1: '',
-          address_2: '',
-          state: '',
-          zip_code: '',
-          country: '',
-        },
-      });
-    } catch (err) {
-      console.log(err);
-      setError('Failed to fetch user data.');
-    }
-  };
-
-  fetchUserData();
-}, [user]);
-
+    fetchUserData();
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -106,7 +104,16 @@ const Profile = () => {
     setSuccess('');
 
     try {
-      const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/user/${user.sub.id}`, formData);
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/user/${user.sub}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setSuccess('Profile updated successfully!');
     } catch (err) {
       setError('Failed to update profile.');

@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext.jsx';
 import { setToken } from '../services/authService'; // ✅ import this helper
 
@@ -87,6 +87,9 @@ const Login = () => {
             {loading ? 'Logging in...' : 'Login'}
           </Button>
         </Form>
+        <div className="mt-3 text-center">
+          <Link to="/register">Create new account</Link> | <Link to="/reset-password">Reset password</Link>
+        </div>
       </Card.Body>
     </Card>
   );

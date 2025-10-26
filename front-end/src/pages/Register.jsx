@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -136,6 +136,9 @@ const Register = () => {
             {loading ? 'Registering…' : 'Register'}
           </Button>
         </Form>
+        <div className="mt-3 text-center">
+          <Link to="/login">Already have an account? Login here</Link>
+        </div>
       </Card.Body>
     </Card>
   );

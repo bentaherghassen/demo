@@ -42,6 +42,7 @@ const AppNavbar = () => {
             ) : (
               <NavDropdown title={user.username || "Account"} id="account-dropdown" align="end">
                 <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/settings">Settings</NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={logoutUser}>Logout</NavDropdown.Item>
               </NavDropdown>

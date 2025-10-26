@@ -67,6 +67,9 @@ def create_app():
     from app.blueprints.user import user_bp
     app.register_blueprint(user_bp, url_prefix='/api/user')
 
+    from app.blueprints.addresses import addresses_bp
+    app.register_blueprint(addresses_bp, url_prefix='/api/addresses')
+
     @app.route('/')
     def index():
         return {'msg': 'Flask backend is running'}

@@ -6,20 +6,21 @@ from flask import current_app
 # The Address model
 class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    label = db.Column(db.String(50), nullable=False)  # e.g., "Home", "Work"
+    address_type = db.Column(db.String(20), nullable=False, default='shipping') # 'shipping' or 'billing'
     address_1 = db.Column(db.String(120), nullable=False)
     address_2 = db.Column(db.String(120), nullable=True)
-    #city = db.Column(db.String(50), nullable=False)
     state = db.Column(db.String(50), nullable=False)
     zip_code = db.Column(db.String(20), nullable=False)
     country = db.Column(db.String(50), nullable=False)
-    
-    # Relationships to User model for billing and shipping
-    billing_address_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    shipping_address_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
     def to_dict(self):
         return {
             'id': self.id,
+            'user_id': self.user_id,
+            'label': self.label,
+            'address_type': self.address_type,
             'address_1': self.address_1,
             'address_2': self.address_2,
             'state': self.state,
@@ -53,15 +54,7 @@ class User(db.Model, UserMixin):
     #is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     # Relationships
-    #stores = db.relationship('Store', backref='owner', lazy=True, cascade="all, delete-orphan")
-    # Billing address relationship
-    billing_address = db.relationship('Address', foreign_keys=[Address.billing_address_user_id], backref='billing_user', uselist=False)
-    
-    # Shipping address relationship
-    shipping_address = db.relationship('Address', foreign_keys=[Address.shipping_address_user_id], backref='shipping_user', uselist=False)
-    
-    # Boolean to check if shipping is same as billing
-    shipping_same_as_billing = db.Column(db.Boolean, default=True)
+    addresses = db.relationship('Address', backref='user', lazy=True, cascade="all, delete-orphan")
     
 # Date of account creation
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -106,9 +99,7 @@ class User(db.Model, UserMixin):
             'bio': self.bio,
             'phone_number': self.phone_number,
             'home_address': self.home_address,
-            'shipping_same_as_billing': self.shipping_same_as_billing,
-            'billing_address': self.billing_address.to_dict() if self.billing_address else None,
-            'shipping_address': self.shipping_address.to_dict() if self.shipping_address else None,
+            'addresses': [address.to_dict() for address in self.addresses],
         }
 
     def __repr__(self):

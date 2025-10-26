@@ -6,6 +6,14 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 user_bp = Blueprint('user', __name__, url_prefix='/api/user')
 
+@user_bp.route('/profile', methods=['GET'])
+@jwt_required()
+def get_profile():
+    current_user_id = get_jwt_identity()
+    user = User.query.get_or_404(current_user_id)
+    return jsonify(user.to_dict())
+
+
 @user_bp.route('/<int:user_id>', methods=['GET'])
 @jwt_required()
 def get_user(user_id):
@@ -15,6 +23,23 @@ def get_user(user_id):
 
     user = User.query.get_or_404(user_id)
     return jsonify(user.to_dict())
+
+
+@user_bp.route('/profile/update', methods=['PATCH'])
+@jwt_required()
+def update_profile():
+    current_user_id = get_jwt_identity()
+    user = User.query.get_or_404(current_user_id)
+    data = request.get_json()
+
+    # Update user fields
+    user.fname = data.get('fname', user.fname)
+    user.lname = data.get('lname', user.lname)
+    user.bio = data.get('bio', user.bio)
+    user.phone_number = data.get('phone_number', user.phone_number)
+
+    db.session.commit()
+    return jsonify({'message': 'Profile updated successfully'})
 
 
 @user_bp.route('/<int:user_id>', methods=['PUT'])
@@ -70,3 +95,19 @@ def update_user(user_id):
     db.session.commit()
 
     return jsonify({'message': 'User updated successfully'})
+
+@user_bp.route('/account', methods=['DELETE'])
+@jwt_required()
+def delete_account():
+    current_user_id = get_jwt_identity()
+    user = User.query.get_or_404(current_user_id)
+    data = request.get_json()
+    password = data.get('password')
+
+    if not password or not bcrypt.check_password_hash(user.password, password):
+        return jsonify({'error': 'Invalid password'}), 401
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({'message': 'Account deleted successfully'})

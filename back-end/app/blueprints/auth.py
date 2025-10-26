@@ -173,3 +173,62 @@ def profile():
         'first_name': user.fname,
         'last_name': user.lname
     })
+
+@auth_bp.route('/change-password', methods=['POST'])
+@jwt_required()
+def change_password():
+    current_user_id = get_jwt_identity()
+    user = User.query.get_or_404(current_user_id)
+    data = request.get_json()
+
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+
+    if not bcrypt.check_password_hash(user.password, current_password):
+        return jsonify({'error': 'Invalid current password'}), 400
+
+    password_error = validate_password_strength(new_password)
+    if password_error:
+        return jsonify(password_error), 400
+
+    user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+    db.session.commit()
+
+    return jsonify({'message': 'Password updated successfully'})
+
+@auth_bp.route('/change-email', methods=['POST'])
+@jwt_required()
+def change_email():
+    # This is a placeholder for a more complex email change process
+    # that would involve sending a confirmation email to the new address.
+    # For now, we will just return a success message.
+    return jsonify({'message': 'A confirmation email has been sent to your new email address.'})
+
+@auth_bp.route('/request-password-reset', methods=['POST'])
+def request_password_reset():
+    data = request.get_json()
+    email = data.get('email')
+    user = User.query.filter_by(email=email).first()
+    if user:
+        # In a real application, you would send an email with the reset token.
+        # For this example, we'll just return a success message.
+        token = user.get_reset_token()
+        print(f"Password reset token for {email}: {token}")
+    return jsonify({'message': 'A password reset link has been sent to your email.'})
+
+@auth_bp.route('/confirm-password-reset', methods=['POST'])
+def confirm_password_reset():
+    data = request.get_json()
+    token = data.get('token')
+    password = data.get('password')
+    user = User.verify_reset_token(token)
+    if not user:
+        return jsonify({'error': 'Invalid or expired token'}), 400
+
+    password_error = validate_password_strength(password)
+    if password_error:
+        return jsonify(password_error), 400
+
+    user.password = bcrypt.generate_password_hash(password).decode('utf-8')
+    db.session.commit()
+    return jsonify({'message': 'Password has been reset successfully.'})
